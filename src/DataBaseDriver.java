@@ -1,14 +1,16 @@
 import org.neo4j.driver.*;
-
+import org.neo4j.driver.Session;
 import java.util.logging.Logger;
 
 public class DataBaseDriver implements AutoCloseable {
     private static final Logger LOGGER = Logger.getLogger(DataBaseDriver.class.getName());
     private final Driver driver;
+    private final Session session;
 
     public DataBaseDriver(String uri, String user, String password, Config config) {
         // The driver is a long living object and should be opened during the start of your application
         driver = GraphDatabase.driver(uri, AuthTokens.basic(user, password), config);
+        this.session = driver.session();
     }
 
     @Override
@@ -38,4 +40,21 @@ public class DataBaseDriver implements AutoCloseable {
             LOGGER.severe("Error deleting game node: " + e.getMessage());
         }
     }
+
+    public void crearNodoPersona(String nombre, int edad) {
+        String query = "CREATE (:Persona {nombre: $nombre, edad: $edad})";
+        session.run(query, Values.parameters("nombre", nombre, "edad", edad));
+    }
+
+    public void crearNodoJuego(String nombreJuego, String descripcion) {
+        try (Session session = driver.session()) {
+            session.writeTransaction(tx -> {
+                tx.run("CREATE (:Juego {nombre: $nombre, descripcion: $descripcion})", Values.parameters("nombre", nombreJuego, "descripcion", descripcion));
+                return null;
+            });
+        }
+    }
+
+
+
 }

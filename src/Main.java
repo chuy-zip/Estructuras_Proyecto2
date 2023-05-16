@@ -8,6 +8,9 @@ public class Main {
 
         try (var app = new DataBaseDriver(URI, USER, PASSWORD, Config.defaultConfig())) {
             System.out.println("Connected");
+
+
+
         }
     }
 }
