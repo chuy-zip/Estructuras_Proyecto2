@@ -22,7 +22,6 @@ public class GeneratorDateBase {
             String csvPersons = "C:\\Users\\USUARIO\\Desktop\\Personas.csv";
             String csvGames= "C:\\Users\\USUARIO\\Desktop\\Juegos.csv";
 
-
             try (CSVReader readerGames = new CSVReader(Files.newBufferedReader(Paths.get(csvGames)))) {
                 String[] encabezado = readerGames.readNext(); // Saltar la fila de encabezado
 
@@ -35,7 +34,6 @@ public class GeneratorDateBase {
                     app.crearNodoJuego(nombreJuego, descripcion);
                 }
             }
-
 
             try (CSVReader readerPersons = new CSVReader(Files.newBufferedReader(Paths.get(csvPersons)))) {
                 String[] encabezado = readerPersons.readNext(); // Saltar la fila de encabezado
@@ -50,6 +48,15 @@ public class GeneratorDateBase {
 
                     // Crear el nodo de persona
                     app.crearNodoPersona(nombre, edad);
+
+                    // Crear la relación con el juego 1
+                    app.crearRelacionPersonaJuego(nombre, juego1);
+
+                    // Crear la relación con el juego 2
+                    app.crearRelacionPersonaJuego(nombre, juego2);
+
+
+
 
                 }
             }

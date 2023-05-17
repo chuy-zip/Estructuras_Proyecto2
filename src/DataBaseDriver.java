@@ -42,14 +42,25 @@ public class DataBaseDriver implements AutoCloseable {
     }
 
     public void crearNodoPersona(String nombre, int edad) {
-        String query = "CREATE (:Persona {nombre: $nombre, edad: $edad})";
+        String query = "CREATE (:Persona {nombre: $nombre, edad: $edad, name: $nombre})";
         session.run(query, Values.parameters("nombre", nombre, "edad", edad));
     }
 
     public void crearNodoJuego(String nombreJuego, String descripcion) {
         try (Session session = driver.session()) {
             session.writeTransaction(tx -> {
-                tx.run("CREATE (:Juego {nombre: $nombre, descripcion: $descripcion})", Values.parameters("nombre", nombreJuego, "descripcion", descripcion));
+                tx.run("CREATE (:Juego {nombre: $nombre, descripcion: $descripcion, name: $nombre})", Values.parameters("nombre", nombreJuego, "descripcion", descripcion));
+                return null;
+            });
+        }
+    }
+
+
+    public void crearRelacionPersonaJuego(String nombrePersona, String nombreJuego) {
+        try (Session session = driver.session()) {
+            session.writeTransaction(tx -> {
+                tx.run("MATCH (p:Persona {nombre: $nombrePersona}), (j:Juego {nombre: $nombreJuego}) " +
+                        "CREATE (p)-[:JUGADO]->(j)", Values.parameters("nombrePersona", nombrePersona, "nombreJuego", nombreJuego));
                 return null;
             });
         }
