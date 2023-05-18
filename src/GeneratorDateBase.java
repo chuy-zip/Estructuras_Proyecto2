@@ -27,11 +27,66 @@ public class GeneratorDateBase {
 
                 String[] fila;
                 while ((fila = readerGames.readNext()) != null) {
+                    int i = 0;
                     String nombreJuego = fila[0];
                     String descripcion = fila[1];
+                    String duration = fila[2];
+                    String category1 = fila[3];
+                    String category2 = fila[4];
+                    String category3 = fila[5];
+                    boolean nintendo = Boolean.parseBoolean(fila[6]);
+                    boolean pc = Boolean.parseBoolean(fila[7]);
+                    boolean mobile = Boolean.parseBoolean(fila[8]);
+                    boolean xbox = Boolean.parseBoolean(fila[9]);
+                    boolean playstation = Boolean.parseBoolean(fila[10]);
+                    boolean multiplayer = Boolean.parseBoolean(fila[11]);
+                    String rating =fila[12];
+
 
                     // Crear el nodo de juego
                     app.crearNodoJuego(nombreJuego, descripcion);
+
+                    //Crear nodo duration
+                    if (app.existeNodoDuracion(duration) == false){
+                        app.crearNodosDuracion(duration);
+                    }
+
+                    //Crear relacion entre la duracion y el juego
+                    app.crearRelacionJuegoDuracion(nombreJuego, duration);
+
+                    //Crear nodos de catagoria1
+                    app.crearNodoCategoria(category1);
+                    app.crearRelacionJuegoCategoria(nombreJuego,category1);
+
+                    //Crear nodos de catagoria2
+                    app.crearNodoCategoria(category2);
+                    app.crearRelacionJuegoCategoria(nombreJuego,category2);
+
+                    //Crear nodos de catagoria3
+                    app.crearNodoCategoria(category3);
+                    app.crearRelacionJuegoCategoria(nombreJuego,category3);
+
+                    //crear nodos de plataforma
+                    if (i == 0){
+                        app.crearNodoPlataforma("nintendo");
+                        app.crearNodoPlataforma("pc");
+                        app.crearNodoPlataforma("xbox");
+                        app.crearNodoPlataforma("mobile");
+                        app.crearNodoPlataforma("playstation");
+
+                    }
+
+                    //crear relaciones
+                    app.crearRelacionJuegoPlataforma(nombreJuego,"nintendo",nintendo);
+                    app.crearRelacionJuegoPlataforma(nombreJuego,"pc",pc);
+                    app.crearRelacionJuegoPlataforma(nombreJuego,"xbox",xbox);
+                    app.crearRelacionJuegoPlataforma(nombreJuego,"mobile",mobile);
+                    app.crearRelacionJuegoPlataforma(nombreJuego,"playstation",playstation);
+
+
+
+
+
                 }
             }
 
@@ -42,8 +97,13 @@ public class GeneratorDateBase {
                 while ((fila = readerPersons.readNext()) != null) {
                     String nombre = fila[0];
                     int edad = Integer.parseInt(fila[1]);
-                    String juego1 = fila[2];
-                    String juego2 = fila[3];
+                    String juego1 = fila[8];
+                    String juego2 = fila[9];
+                    String juego3 = fila[10];
+                    String juego4 = fila[11];
+                    String juego5 = fila[12];
+
+
                     String consola = fila[4];
 
                     // Crear el nodo de persona
@@ -55,8 +115,14 @@ public class GeneratorDateBase {
                     // Crear la relación con el juego 2
                     app.crearRelacionPersonaJuego(nombre, juego2);
 
+                    // Crear la relación con el juego 3
+                    app.crearRelacionPersonaJuego(nombre, juego3);
 
+                    // Crear la relación con el juego 4
+                    app.crearRelacionPersonaJuego(nombre, juego4);
 
+                    // Crear la relación con el juego 5
+                    app.crearRelacionPersonaJuego(nombre, juego5);
 
                 }
             }
