@@ -43,12 +43,22 @@ public class DataBaseDriver implements AutoCloseable {
     }
 
 
-    ///QUERY'S PARA CREAR NODOS///
+    /**
+     * Crea un nodo persona
+     * @param nombre
+     * @param edad
+     */
 
     public void crearNodoPersona(String nombre, int edad) {
         String query = "CREATE (:Persona {nombre: $nombre, edad: $edad, name: $nombre})";
         session.run(query, Values.parameters("nombre", nombre, "edad", edad));
     }
+
+    /**
+     * Crea un nodo juego
+     * @param nombreJuego
+     * @param descripcion
+     */
 
     public void crearNodoJuego(String nombreJuego, String descripcion) {
         try (Session session = driver.session()) {
@@ -59,7 +69,57 @@ public class DataBaseDriver implements AutoCloseable {
         }
     }
 
-    // Método para verificar si existe un nodo de duración
+
+    /**
+     * Crea relacion entre persona y un juego
+     * @param nombrePersona
+     * @param nombreJuego
+     */
+    public void crearRelacionPersonaJuego(String nombrePersona, String nombreJuego) {
+        try (Session session = driver.session()) {
+            session.writeTransaction(tx -> {
+                tx.run("MATCH (p:Persona {nombre: $nombrePersona}), (j:Juego {nombre: $nombreJuego}) " +
+                        "CREATE (p)-[:JUGADO]->(j)", Values.parameters("nombrePersona", nombrePersona, "nombreJuego", nombreJuego));
+                return null;
+            });
+        }
+    }
+
+
+    /**
+     * Crea un nodo duracion
+     * @param duracion
+     */
+    public void crearNodoDuracion(String duracion) {
+        try (Session session = driver.session()) {
+            String query = "CREATE (:Duration {duracion: $duracion})";
+            session.run(query, Values.parameters("duracion", duracion));
+        }
+    }
+
+
+    /**
+     * Verifica si ya existe el nodo de duracion especifica y de no ser así lo crea
+     * @param duracion
+     */
+    public void crearNodosDuracion(String duracion) {
+        // Verificar si ya existe un nodo de duración con el mismo valor
+        if (existeNodoDuracion(duracion)) {
+            return;
+        }
+
+        // Crear el nodo de duración
+        crearNodoDuracion(duracion);
+    }
+
+
+
+
+    /**
+     * devuelve true su el Nodo con una duracion especifica ya existe, false si no existe
+     * @param duracion
+     * @return
+     */
     public boolean existeNodoDuracion(String duracion) {
         try (Session session = driver.session()) {
             String query = "MATCH (d:Duration {duracion: $duracion}) RETURN d";
@@ -69,19 +129,11 @@ public class DataBaseDriver implements AutoCloseable {
         }
     }
 
-    // Método para crear un nodo de duración
-    public void crearNodoDuracion(String duracion) {
-        try (Session session = driver.session()) {
-            String query = "CREATE (:Duration {duracion: $duracion})";
-            session.run(query, Values.parameters("duracion", duracion));
-        }
-    }
-
-
-
-
-
-    // Método para crear una relación entre un juego y una duración
+    /**
+     * Crea una relacion entre el juego y su duracion
+     * @param nombreJuego
+     * @param duracion
+     */
     public void crearRelacionJuegoDuracion(String nombreJuego, String duracion) {
         try (Session session = driver.session()) {
             // Eliminar relaciones existentes entre el juego y la duración
@@ -95,48 +147,10 @@ public class DataBaseDriver implements AutoCloseable {
         }
     }
 
-
-    public void crearNodosDuracion(String duracion) {
-        // Verificar si ya existe un nodo de duración con el mismo valor
-        if (existeNodoDuracion(duracion)) {
-            return;
-        }
-
-        // Crear el nodo de duración
-        crearNodoDuracion(duracion);
-    }
-
-
-    public void crearNodoPlataforma(String plataforma) {
-        try (Session session = driver.session()) {
-            // Verificar si el nodo personalizado ya existe
-            String existeQuery = "MATCH (n:Personalizado {titulo: $titulo}) RETURN count(n) AS count";
-            Result result = session.run(existeQuery, Values.parameters("titulo", plataforma));
-
-            if (result.hasNext() && result.next().get("count").asInt() == 0) {
-                // Crear el nodo personalizado
-                String crearNodoQuery = "CREATE (:Personalizado {titulo: $titulo, propiedad: $plataforma})";
-                session.run(crearNodoQuery, Values.parameters("titulo", plataforma, "plataforma", plataforma));
-            }
-        }
-    }
-
-    public void crearRelacionJuegoPlataforma(String nombreJuego, String plataforma, boolean valor) {
-        if (valor) {
-            try (Session session = driver.session()) {
-                // Crear la relación entre el juego y el nodo personalizado
-                String crearRelacionQuery = "MATCH (j:Juego {nombre: $nombreJuego}), (n:Personalizado {titulo: $titulo}) " +
-                        "CREATE (j)-[:DISPONIBLE]->(n)";
-                session.run(crearRelacionQuery, Values.parameters("nombreJuego", nombreJuego, "titulo", plataforma));
-            }
-        }
-    }
-
-
-
-
-
-
+    /**
+     * Crea un Nodo de una categoria especifica de un juego
+     * @param categoria
+     */
     public void crearNodoCategoria(String categoria) {
         try (Session session = driver.session()) {
             // Verificar si el nodo de categoría ya existe
@@ -151,24 +165,11 @@ public class DataBaseDriver implements AutoCloseable {
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    /**
+     * Relaciona un juego con su categoria
+     * @param nombreJuego
+     * @param categoria
+     */
     public void crearRelacionJuegoCategoria(String nombreJuego, String categoria) {
         try (Session session = driver.session()) {
             // Crear la relación entre el juego y la categoría
@@ -179,19 +180,136 @@ public class DataBaseDriver implements AutoCloseable {
     }
 
 
+    /**
+     * Crea un Nodo de una plataforma (de gaming) especifica
+     * @param plataforma
+     */
+    public void crearNodoPlataforma(String plataforma) {
+        try (Session session = driver.session()) {
+            // Verificar si el nodo personalizado ya existe
+            String existeQuery = "MATCH (n:Plataforma {titulo: $titulo}) RETURN count(n) AS count";
+            Result result = session.run(existeQuery, Values.parameters("titulo", plataforma));
+
+            if (result.hasNext() && result.next().get("count").asInt() == 0) {
+                // Crear el nodo personalizado
+                String crearNodoQuery = "CREATE (:Plataforma {titulo: $titulo, propiedad: $plataforma})";
+                session.run(crearNodoQuery, Values.parameters("titulo", plataforma, "plataforma", plataforma));
+            }
+        }
+    }
 
 
+    /**
+     * Relaciona un juego con la plataforma para la que el juego esta disponible
+     * @param nombreJuego
+     * @param plataforma
+     * @param valor
+     */
 
+    public void crearRelacionJuegoPlataforma(String nombreJuego, String plataforma, boolean valor) {
+        if (valor) {
+            try (Session session = driver.session()) {
+                // Crear la relación entre el juego y el nodo personalizado
+                String crearRelacionQuery = "MATCH (j:Juego {nombre: $nombreJuego}), (n:Personalizado {titulo: $titulo}) " +
+                        "CREATE (j)-[:DISPONIBLE]->(n)";
+                session.run(crearRelacionQuery, Values.parameters("nombreJuego", nombreJuego, "titulo", plataforma));
+            }
+        }
+    }
 
-    public void crearRelacionPersonaJuego(String nombrePersona, String nombreJuego) {
+    /**
+     * Se asegura de que el nodo multiplayer no se vuelva a crear
+     * @return
+     */
+    public boolean existeNodoMultiplayer() {
+        try (Session session = driver.session()) {
+            Result result = session.run("MATCH (m:Multiplayer) RETURN count(m) AS count");
+            return result.hasNext() && result.next().get("count").asInt() > 0;
+        }
+    }
+
+    /**
+     * Crea un nodo con una unica propiedad Multiplayer.
+     */
+    public void crearNodoMultiplayer() {
         try (Session session = driver.session()) {
             session.writeTransaction(tx -> {
-                tx.run("MATCH (p:Persona {nombre: $nombrePersona}), (j:Juego {nombre: $nombreJuego}) " +
-                        "CREATE (p)-[:JUGADO]->(j)", Values.parameters("nombrePersona", nombrePersona, "nombreJuego", nombreJuego));
+                tx.run("CREATE (:Multiplayer {titulo: 'multiplayer'})");
                 return null;
             });
         }
     }
+
+
+    /**
+     * Crea una relacion entre los juegos que tienen la opcion multiplayer
+     * @param nombreJuego
+     * @param multiplayer
+     */
+    public void crearRelacionJuegoMultiplayer(String nombreJuego, boolean multiplayer) {
+        if (multiplayer) {
+            try (Session session = driver.session()) {
+                session.writeTransaction(tx -> {
+                    tx.run("MATCH (j:Juego {nombre: $nombreJuego}), (m:Multiplayer {titulo: 'multiplayer'}) " +
+                                    "CREATE (j)-[:MULTIPLAYER]->(m)",
+                            Values.parameters("nombreJuego", nombreJuego));
+                    return null;
+                });
+            }
+        }
+    }
+
+
+    /**
+     * Crea un nodo con un rating especifico del juego
+     * @param rating
+     */
+    public void crearNodoRating(String rating) {
+        if (existeNodoRating(rating) == false) {
+            try (Session session = driver.session()) {
+                // Verificar si el nodo personalizado ya existe
+                String existeQuery = "MATCH (n:Rating {rating: $rating}) RETURN count(n) AS count";
+                Result result = session.run(existeQuery, Values.parameters("rating", rating));
+
+                if (result.hasNext() && result.next().get("count").asInt() == 0) {
+                    // Crear el nodo personalizado
+                    String crearNodoQuery = "CREATE (:Rating {rating: $rating, rating: $rating})";
+                    session.run(crearNodoQuery, Values.parameters("rating", rating, "rating", rating));
+                }
+            }
+        }
+    }
+
+
+    /**
+     * Devuelve true si el nodo de ese rating especifico ya exsite
+     * @param rating
+     * @return
+     */
+    public boolean existeNodoRating(String rating) {
+        try (Session session = driver.session()) {
+            String query = "MATCH (d:Rating {rating: $rating}) RETURN d";
+            Result result = session.run(query, Values.parameters("rating", rating));
+
+            return result.hasNext();
+        }
+    }
+
+    /**
+     * Crea larelacion entre el juego y su rating
+     * @param nombreJuego
+     * @param rating
+     */
+    public void crearRelacionJuegoRating(String nombreJuego, String rating) {
+        try (Session session = driver.session()) {
+            session.writeTransaction(tx -> {
+                tx.run("MATCH (j:Juego {nombre: $nombreJuego}), (r:Rating {rating: $rating}) " +
+                        "CREATE (j)-[:TIENE_RATING]->(r)", Values.parameters("nombreJuego", nombreJuego, "rating", rating));
+                return null;
+            });
+        }
+    }
+
 
 
 

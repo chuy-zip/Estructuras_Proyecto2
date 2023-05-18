@@ -66,7 +66,7 @@ public class GeneratorDateBase {
                     app.crearNodoCategoria(category3);
                     app.crearRelacionJuegoCategoria(nombreJuego,category3);
 
-                    //crear nodos de plataforma
+                    //crear nodos de plataforma y nodo Multiplayer
                     if (i == 0){
                         app.crearNodoPlataforma("nintendo");
                         app.crearNodoPlataforma("pc");
@@ -74,14 +74,38 @@ public class GeneratorDateBase {
                         app.crearNodoPlataforma("mobile");
                         app.crearNodoPlataforma("playstation");
 
+
+
                     }
 
-                    //crear relaciones
+                    //crea el nodo multiplayer
+                    if (app.existeNodoMultiplayer() == false) {
+                        app.crearNodoMultiplayer();
+                    }
+
+
+
+                    //crear relaciones Juego-Plataforma
                     app.crearRelacionJuegoPlataforma(nombreJuego,"nintendo",nintendo);
                     app.crearRelacionJuegoPlataforma(nombreJuego,"pc",pc);
                     app.crearRelacionJuegoPlataforma(nombreJuego,"xbox",xbox);
                     app.crearRelacionJuegoPlataforma(nombreJuego,"mobile",mobile);
                     app.crearRelacionJuegoPlataforma(nombreJuego,"playstation",playstation);
+
+                    //Crear relacion Juego-Multiplayer
+                    app.crearRelacionJuegoMultiplayer(nombreJuego,multiplayer);
+
+
+                    //Crear nodo Rating
+                    app.crearNodoRating(rating);
+
+                    //Crear relacion Juego-Rating
+                    app.crearRelacionJuegoRating(nombreJuego,rating);
+
+
+
+
+
 
 
 
