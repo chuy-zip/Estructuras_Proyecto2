@@ -43,15 +43,20 @@ public class DataBaseDriver implements AutoCloseable {
     }
 
 
+
     /**
      * Crea un nodo persona
      * @param nombre
      * @param edad
+     * @param password
      */
-
-    public void crearNodoPersona(String nombre, int edad, String clave) {
-        String query = "CREATE (:Persona {nombre: $nombre, edad: $edad, clave: $clave, titulo: $nombre})";
-        session.run(query, Values.parameters("nombre", nombre, "edad", edad, "clave", clave));
+    public void crearNodoPersona(String nombre, int edad, String password) {
+        try (Session session = driver.session()) {
+            session.writeTransaction(tx -> {
+                tx.run("CREATE (:Persona {nombre: $nombre, edad: $edad, password: $password})", Values.parameters("nombre", nombre, "edad", edad, "password", password));
+                return null;
+            });
+        }
     }
 
 

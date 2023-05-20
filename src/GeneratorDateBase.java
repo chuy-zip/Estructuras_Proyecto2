@@ -19,8 +19,8 @@ public class GeneratorDateBase {
         try (var app = new DataBaseDriver(URI, USER, PASSWORD, Config.defaultConfig())) {
             System.out.println("Connected");
 
-            String csvPersons = "C:\\Users\\USUARIO\\Desktop\\Personas.csv";
-            String csvGames= "C:\\Users\\USUARIO\\Desktop\\Juegos.csv";
+            String csvPersons = "src/Personas.csv";
+            String csvGames= "src/juegos.csv";
 
             try (CSVReader readerGames = new CSVReader(Files.newBufferedReader(Paths.get(csvGames)))) {
                 String[] encabezado = readerGames.readNext(); // Saltar la fila de encabezado
