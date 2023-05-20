@@ -49,10 +49,12 @@ public class DataBaseDriver implements AutoCloseable {
      * @param edad
      */
 
-    public void crearNodoPersona(String nombre, int edad) {
-        String query = "CREATE (:Persona {nombre: $nombre, edad: $edad, name: $nombre})";
-        session.run(query, Values.parameters("nombre", nombre, "edad", edad));
+    public void crearNodoPersona(String nombre, int edad, String clave) {
+        String query = "CREATE (:Persona {nombre: $nombre, edad: $edad, clave: $clave, titulo: $nombre})";
+        session.run(query, Values.parameters("nombre", nombre, "edad", edad, "clave", clave));
     }
+
+
 
     /**
      * Crea un nodo juego

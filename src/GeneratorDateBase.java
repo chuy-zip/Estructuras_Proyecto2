@@ -126,12 +126,13 @@ public class GeneratorDateBase {
                     String juego3 = fila[10];
                     String juego4 = fila[11];
                     String juego5 = fila[12];
+                    String clave = fila[13];
 
 
                     String consola = fila[4];
 
                     // Crear el nodo de persona
-                    app.crearNodoPersona(nombre, edad);
+                    app.crearNodoPersona(nombre, edad, clave);
 
                     // Crear la relación con el juego 1
                     app.crearRelacionPersonaJuego(nombre, juego1);
