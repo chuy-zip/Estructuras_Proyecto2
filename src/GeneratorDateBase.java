@@ -19,8 +19,8 @@ public class GeneratorDateBase {
         try (var app = new DataBaseDriver(URI, USER, PASSWORD, Config.defaultConfig())) {
             System.out.println("Connected");
 
-            String csvPersons = "src/Personas.csv";
-            String csvGames= "src/juegos.csv";
+            String csvPersons = "src/persons.csv";
+            String csvGames= "src/games.csv";
 
             try (CSVReader readerGames = new CSVReader(Files.newBufferedReader(Paths.get(csvGames)))) {
                 String[] encabezado = readerGames.readNext(); // Saltar la fila de encabezado
@@ -121,6 +121,12 @@ public class GeneratorDateBase {
                 while ((fila = readerPersons.readNext()) != null) {
                     String nombre = fila[0];
                     int edad = Integer.parseInt(fila[1]);
+                    boolean nintendo = Boolean.parseBoolean(fila[2]);
+                    boolean pc = Boolean.parseBoolean(fila[3]);
+                    boolean mobile = Boolean.parseBoolean(fila[4]);
+                    boolean xbox = Boolean.parseBoolean(fila[5]);
+                    boolean playstation = Boolean.parseBoolean(fila[6]);
+                    boolean preferMulti = Boolean.parseBoolean(fila[7]);
                     String juego1 = fila[8];
                     String juego2 = fila[9];
                     String juego3 = fila[10];
@@ -132,7 +138,7 @@ public class GeneratorDateBase {
                     String consola = fila[4];
 
                     // Crear el nodo de persona
-                    app.crearNodoPersona(nombre, edad, clave);
+                    app.crearNodoPersona(nombre, edad, clave, nintendo, pc, mobile, xbox, playstation, preferMulti);
 
                     // Crear la relación con el juego 1
                     app.crearRelacionPersonaJuego(nombre, juego1);

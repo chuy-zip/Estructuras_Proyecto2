@@ -50,10 +50,10 @@ public class DataBaseDriver implements AutoCloseable {
      * @param edad
      * @param password
      */
-    public void crearNodoPersona(String nombre, int edad, String password) {
+    public void crearNodoPersona(String nombre, int edad, String password, boolean nintendo, boolean pc, boolean mobile, boolean xbox, boolean playstation, boolean preferMulti) {
         try (Session session = driver.session()) {
             session.writeTransaction(tx -> {
-                tx.run("CREATE (:Persona {nombre: $nombre, edad: $edad, password: $password})", Values.parameters("nombre", nombre, "edad", edad, "password", password));
+                tx.run("CREATE (:Persona {nombre: $nombre, edad: $edad, password: $password, nintendo: $nintendo, pc: $pc, mobile: $mobile, xbox: $xbox, playstation: $playstation, preferMulti: $preferMulti})", Values.parameters("nombre", nombre, "edad", edad, "password", password, "nintendo", nintendo, "pc", pc, "mobile", mobile, "xbox", xbox, "playstation", playstation, "preferMulti", preferMulti));
                 return null;
             });
         }
@@ -70,7 +70,7 @@ public class DataBaseDriver implements AutoCloseable {
     public void crearNodoJuego(String nombreJuego, String descripcion) {
         try (Session session = driver.session()) {
             session.writeTransaction(tx -> {
-                tx.run("CREATE (:Juego {nombre: $nombre, descripcion: $descripcion, name: $nombre})", Values.parameters("nombre", nombreJuego, "descripcion", descripcion));
+                tx.run("CREATE (:Juego {nombre: $nombre, descripcion: $descripcion})", Values.parameters("nombre", nombreJuego, "descripcion", descripcion));
                 return null;
             });
         }
