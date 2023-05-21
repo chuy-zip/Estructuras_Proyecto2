@@ -63,10 +63,10 @@ public class DataBaseDriver implements AutoCloseable {
      * @param descripcion
      */
 
-    public void crearNodoJuego(String nombreJuego, String descripcion) {
+    public void crearNodoJuego(String nombreJuego, String descripcion, boolean nintendo, boolean pc, boolean mobile, boolean xbox, boolean playstation) {
         try (Session session = driver.session()) {
             session.writeTransaction(tx -> {
-                tx.run("CREATE (:Juego {nombre: $nombre, descripcion: $descripcion})", Values.parameters("nombre", nombreJuego, "descripcion", descripcion));
+                tx.run("CREATE (:Juego {nombre: $nombre, descripcion: $descripcion,  nintendo: $nintendo, pc: $pc, mobile: $mobile, xbox: $xbox, playstation: $playstation})", Values.parameters("nombre", nombreJuego, "descripcion", descripcion, "nintendo", nintendo, "pc", pc, "mobile", mobile, "xbox", xbox, "playstation", playstation));
                 return null;
             });
         }
