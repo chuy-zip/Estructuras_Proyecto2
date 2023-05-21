@@ -44,7 +44,7 @@ public class GeneratorDateBase {
 
 
                     // Crear el nodo de juego
-                    app.crearNodoJuego(nombreJuego, descripcion, nintendo, pc, mobile, xbox, playstation);
+                    app.crearNodoJuego(nombreJuego, descripcion, nintendo, pc, mobile, xbox, playstation, multiplayer, rating);
 
                     //Crear nodo duration
                     if (app.existeNodoDuracion(duration) == false){

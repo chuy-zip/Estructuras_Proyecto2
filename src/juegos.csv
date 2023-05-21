@@ -1,7 +1,7 @@
 ﻿GameName,Description,Duration,Category1,Category2,Category3,Nintendo ,Pc,Mobile,Xbox,Playstation,Multiplayer,RatingESRB
 Sonic,me gusta,short,action,races,platforms,false,true,true,false,true,false,C
 Mario,carreras,medium,races,puzzles,platforms,true,true,false,true,true,true,A
-Zelda,obtener la trifuerza,long,adventures,puzzles,platforms,true,true,fasle,false,false,false,A
+Zelda,obtener la trifuerza,long,adventures,puzzles,platforms,true,true,false,false,false,false,A
 Pokemon,cazar pokemones,long,adventures,open world,action,true,true,true,false,false,false,E
 Smash Bros,es competitivo,medium,fighting,action,competitive,true,true,false,false,false,true,E
 Ajedrez,es de pensar,short,strategy ,puzzles,online ,true,true,true,true,true,true,E
