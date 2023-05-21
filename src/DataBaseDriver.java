@@ -20,30 +20,29 @@ public class DataBaseDriver implements AutoCloseable {
         driver.close();
     }
 
-    public void createGame(String name, String hours, String description) {
-        try (Session session = driver.session(SessionConfig.forDatabase("neo4j"))) {
-            Transaction tx = session.beginTransaction();
-            String query = "CREATE (n:Game {Name: $name, Hours: $hours, Description: $description})";
-            tx.run(query, Values.parameters("name", name, "hours", hours, "description", description));
-            tx.commit();
-        }
-    }
-
-    public void deleteGame(String name) {
+    /**
+     * Creates a relation between a user and a Game
+     * @param personaName The ID of the user which is adding a game to its favorites list
+     * @param juegoName The game to be connected as favorite
+     */
+    public void createFavoriteConnection(String personaName, String juegoName) {
         try (Session session = driver.session()) {
-            session.writeTransaction(transaction -> {
-                String query = "MATCH (n:Game {Name: $name}) DELETE n";
-                Result result = transaction.run(query, Values.parameters("name", name));
+            session.writeTransaction(tx -> {
+                tx.run("MATCH (p:Persona {nombre: $personaName}), (j:Juego {nombre: $juegoName}) " +
+                        "MERGE (p)-[:FAVORITE]->(j)", Values.parameters("personaName", personaName, "juegoName", juegoName));
                 return null;
             });
-            LOGGER.info("Game node with name " + name + " deleted successfully.");
-        } catch (Exception e) {
-            LOGGER.severe("Error deleting game node: " + e.getMessage());
         }
     }
-
-
-
+    public void deleteFavoriteConnection(String nombrePersona, String nombreJuego) {
+        try (Session session = driver.session()) {
+            session.writeTransaction(tx -> {
+                tx.run("MATCH (p:Persona {nombre: $nombrePersona})-[f:FAVORITE]->(j:Juego {nombre: $nombreJuego}) " +
+                        "DELETE f", Values.parameters("nombrePersona", nombrePersona, "nombreJuego", nombreJuego));
+                return null;
+            });
+        }
+    }
     /**
      * Crea un nodo persona
      * @param nombre
@@ -58,9 +57,6 @@ public class DataBaseDriver implements AutoCloseable {
             });
         }
     }
-
-
-
     /**
      * Crea un nodo juego
      * @param nombreJuego
@@ -90,6 +86,7 @@ public class DataBaseDriver implements AutoCloseable {
                 return null;
             });
         }
+
     }
 
 
