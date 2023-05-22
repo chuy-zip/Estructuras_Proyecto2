@@ -15,7 +15,8 @@ public class User {
 
     public User(String userName, String userPassword, int userAge,
                 boolean prefersNintendo, boolean prefersPC, boolean prefersMobile,
-                boolean prefersXbox, boolean prefersPlaystation, boolean prefersMultiplayer) {
+                boolean prefersXbox, boolean prefersPlaystation, boolean prefersMultiplayer,
+                ArrayList<Game> played, ArrayList<Game> favorites) {
         this.userName = userName;
         this.userPassword = userPassword;
         this.userAge = userAge;
@@ -25,8 +26,8 @@ public class User {
         this.prefersXbox = prefersXbox;
         this.prefersPlaystation = prefersPlaystation;
         this.prefersMultiplayer = prefersMultiplayer;
-        this.playedGames = new ArrayList<>();
-        this.favoriteGames = new ArrayList<>();
+        this.playedGames = played;
+        this.favoriteGames = favorites;
     }
 
     // Getters and Setters

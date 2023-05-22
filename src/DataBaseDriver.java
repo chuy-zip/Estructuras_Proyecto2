@@ -365,6 +365,69 @@ public class DataBaseDriver implements AutoCloseable {
                 isOnNintendo, isOnPC, isOnMobile, isOnXbox, isOnPlayStation, isMultiplayer, esrbRating);
     }
 
+    public User mapUser(Node userNode) {
+        String userName = userNode.get("nombre").asString();
+        String userPassword = userNode.get("password").asString();
+        int userAge = userNode.get("edad").asInt();
+        boolean prefersMobile = userNode.get("mobile").asBoolean();
+        boolean prefersNintendo = userNode.get("nintendo").asBoolean();
+        boolean prefersPC = userNode.get("pc").asBoolean();
+        boolean prefersXbox = userNode.get("xbox").asBoolean();
+        boolean prefersPlaystation = userNode.get("playstation").asBoolean();
+        boolean prefersMultiplayer = userNode.get("preferMulti").asBoolean();
+
+        ArrayList<Game> playedGames = new ArrayList<>();
+        ArrayList<Game> favoriteGames = new ArrayList<>();
+
+        // Retrieve played games using Cypher query
+        try (Session session = driver.session()) {
+            Result result = session.run("MATCH (user:Persona)-[:JUGADO]->(juego:Juego) WHERE user.nombre = $userName RETURN juego",
+                    parameters("userName", userName));
+            while (result.hasNext()) {
+                Record record = result.next();
+                Node gameNode = record.get("juego").asNode();
+                Game game = mapGame(gameNode);
+                playedGames.add(game);
+            }
+        } catch (Exception e) {
+            LOGGER.severe("Failed to retrieve played games for user: " + userName);
+            e.printStackTrace();
+        }
+
+        // Retrieve favorite games using Cypher query
+        try (Session session = driver.session()) {
+            Result result = session.run("MATCH (user:Persona)-[:FAVORITE]->(juego:Juego) WHERE user.nombre = $userName RETURN juego",
+                    parameters("userName", userName));
+            while (result.hasNext()) {
+                Record record = result.next();
+                Node gameNode = record.get("juego").asNode();
+                Game game = mapGame(gameNode);
+                favoriteGames.add(game);
+            }
+        } catch (Exception e) {
+            LOGGER.severe("Failed to retrieve favorite games for user: " + userName);
+            e.printStackTrace();
+        }
+
+        return new User(userName, userPassword, userAge, prefersNintendo, prefersPC, prefersMobile,
+                prefersXbox, prefersPlaystation, prefersMultiplayer, playedGames, favoriteGames);
+    }
+    public Node findUserNode(String userName, String password) {
+        try (Session session = driver.session()) {
+            Result result = session.run("MATCH (user:Persona {nombre: $userName, password: $password}) RETURN user",
+                    parameters("userName", userName, "password", password));
+            if (result.hasNext()) {
+                Record record = result.next();
+                return record.get("user").asNode();
+            }
+        } catch (Exception e) {
+            LOGGER.severe("Failed to find user node for userName: " + userName + ", password: " + password);
+            e.printStackTrace();
+        }
+        return null; // User node not found
+    }
+
+
 
     public Node getGameNodeByName(String gameName) {
         try (Session session = driver.session()) {
