@@ -445,5 +445,34 @@ public class DataBaseDriver implements AutoCloseable {
         return null;
     }
 
+    public ArrayList<Game> getCompatibleGames(User user) {
+        ArrayList<Game> compatibleGames = new ArrayList<>();
+
+        try (Session session = driver.session()) {
+            Result result = session.run("MATCH (u:Persona {nombre: $userName})\n" +
+                            "MATCH (g:Juego)\n" +
+                            "WHERE (g.nintendo OR g.pc OR g.mobile OR g.xbox OR g.playstation)\n" +
+                            "AND (u.nintendo OR u.pc OR u.mobile OR u.xbox OR u.playstation)\n" +
+                            "AND g.isMultiplayer = u.preferMulti\n" +
+                            "RETURN g",
+                    parameters("userName", user.getUserName()));
+
+            while (result.hasNext()) {
+                Record record = result.next();
+                Node gameNode = record.get("g").asNode();
+                Game game = mapGame(gameNode);
+                compatibleGames.add(game);
+            }
+        } catch (Exception e) {
+            LOGGER.severe("Failed to retrieve compatible games for user: " + user.getUserName());
+            e.printStackTrace();
+        }
+
+        return compatibleGames;
+    }
+
+
+
+
 
 }
