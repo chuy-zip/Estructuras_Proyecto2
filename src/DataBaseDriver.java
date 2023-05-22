@@ -471,8 +471,22 @@ public class DataBaseDriver implements AutoCloseable {
         return compatibleGames;
     }
 
+    public boolean userExists(String username, String password) {
+        try (Session session = driver.session()) {
+            Result result = session.run("MATCH (u:Persona {nombre: $username, password: $password}) RETURN count(u) AS count",
+                    parameters("username", username, "password", password));
 
+            if (result.hasNext()) {
+                Record record = result.next();
+                int count = record.get("count").asInt();
+                return count > 0;
+            }
+        } catch (Exception e) {
+            LOGGER.severe("Failed to check user existence for username: " + username);
+            e.printStackTrace();
+        }
 
-
+        return false;
+    }
 
 }
