@@ -1,4 +1,5 @@
 import org.neo4j.driver.Config;
+import org.neo4j.driver.types.Node;
 
 public class DataBaseController {
 
@@ -13,7 +14,10 @@ public class DataBaseController {
 
         try (var app = new DataBaseDriver(URI, USER, PASSWORD, Config.defaultConfig())) {
             System.out.println("Connected");
-            app.deleteFavoriteConnection("Chuy","Ajedrez");
+            Node node = app.getGameNodeByName("Mario");
+
+            Game nGame = app.mapGame(node);
+            System.out.println("This game: " + nGame.getGameName() + "This var: " + nGame.getCategory2());
 
         }
 

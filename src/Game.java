@@ -1,5 +1,4 @@
 public class Game {
-    private String nodeID;
     private String gameName;
     private String description;
     private String duration;
@@ -14,12 +13,11 @@ public class Game {
     private boolean isMultiplayer;
     private String esrbRating;
 
-    public Game(String nodeID, String gameName, String description, String duration,
+    public Game(String gameName, String description, String duration,
                 String category1, String category2, String category3,
                 boolean isOnNintendo, boolean isOnPC, boolean isOnMobile,
                 boolean isOnXbox, boolean isOnPlayStation, boolean isMultiplayer,
                 String esrbRating) {
-        this.nodeID = nodeID;
         this.gameName = gameName;
         this.description = description;
         this.duration = duration;
@@ -33,14 +31,6 @@ public class Game {
         this.isOnPlayStation = isOnPlayStation;
         this.isMultiplayer = isMultiplayer;
         this.esrbRating = esrbRating;
-    }
-
-    public String getNodeID() {
-        return nodeID;
-    }
-
-    public void setNodeID(String nodeID) {
-        this.nodeID = nodeID;
     }
 
     public String getGameName() {

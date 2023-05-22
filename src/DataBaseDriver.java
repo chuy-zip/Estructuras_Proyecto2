@@ -1,7 +1,16 @@
 import org.neo4j.driver.*;
+import org.neo4j.driver.Record;
 import org.neo4j.driver.Session;
+import org.neo4j.driver.types.Node;
+import org.neo4j.driver.types.Relationship;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
+
+import static org.neo4j.driver.Values.parameters;
+import org.neo4j.driver.types.Node;
+import org.neo4j.driver.types.Relationship;
 
 public class DataBaseDriver implements AutoCloseable {
     private static final Logger LOGGER = Logger.getLogger(DataBaseDriver.class.getName());
@@ -29,7 +38,7 @@ public class DataBaseDriver implements AutoCloseable {
         try (Session session = driver.session()) {
             session.writeTransaction(tx -> {
                 tx.run("MATCH (p:Persona {nombre: $personaName}), (j:Juego {nombre: $juegoName}) " +
-                        "MERGE (p)-[:FAVORITE]->(j)", Values.parameters("personaName", personaName, "juegoName", juegoName));
+                        "MERGE (p)-[:FAVORITE]->(j)", parameters("personaName", personaName, "juegoName", juegoName));
                 return null;
             });
         }
@@ -38,7 +47,7 @@ public class DataBaseDriver implements AutoCloseable {
         try (Session session = driver.session()) {
             session.writeTransaction(tx -> {
                 tx.run("MATCH (p:Persona {nombre: $nombrePersona})-[f:FAVORITE]->(j:Juego {nombre: $nombreJuego}) " +
-                        "DELETE f", Values.parameters("nombrePersona", nombrePersona, "nombreJuego", nombreJuego));
+                        "DELETE f", parameters("nombrePersona", nombrePersona, "nombreJuego", nombreJuego));
                 return null;
             });
         }
@@ -52,7 +61,7 @@ public class DataBaseDriver implements AutoCloseable {
     public void crearNodoPersona(String nombre, int edad, String password, boolean nintendo, boolean pc, boolean mobile, boolean xbox, boolean playstation, boolean preferMulti) {
         try (Session session = driver.session()) {
             session.writeTransaction(tx -> {
-                tx.run("CREATE (:Persona {nombre: $nombre, edad: $edad, password: $password, nintendo: $nintendo, pc: $pc, mobile: $mobile, xbox: $xbox, playstation: $playstation, preferMulti: $preferMulti})", Values.parameters("nombre", nombre, "edad", edad, "password", password, "nintendo", nintendo, "pc", pc, "mobile", mobile, "xbox", xbox, "playstation", playstation, "preferMulti", preferMulti));
+                tx.run("CREATE (:Persona {nombre: $nombre, edad: $edad, password: $password, nintendo: $nintendo, pc: $pc, mobile: $mobile, xbox: $xbox, playstation: $playstation, preferMulti: $preferMulti})", parameters("nombre", nombre, "edad", edad, "password", password, "nintendo", nintendo, "pc", pc, "mobile", mobile, "xbox", xbox, "playstation", playstation, "preferMulti", preferMulti));
                 return null;
             });
         }
@@ -66,7 +75,7 @@ public class DataBaseDriver implements AutoCloseable {
     public void crearNodoJuego(String nombreJuego, String descripcion, boolean nintendo, boolean pc, boolean mobile, boolean xbox, boolean playstation, boolean isMultiplayer, String ESRBRating) {
         try (Session session = driver.session()) {
             session.writeTransaction(tx -> {
-                tx.run("CREATE (:Juego {nombre: $nombre, descripcion: $descripcion,  nintendo: $nintendo, pc: $pc, mobile: $mobile, xbox: $xbox, playstation: $playstation, isMultiplayer: $isMultiplayer, ESRBRating: $ESRBRating})", Values.parameters("nombre", nombreJuego, "descripcion", descripcion, "nintendo", nintendo, "pc", pc, "mobile", mobile, "xbox", xbox, "playstation", playstation, "isMultiplayer", isMultiplayer, "ESRBRating", ESRBRating));
+                tx.run("CREATE (:Juego {nombre: $nombre, descripcion: $descripcion,  nintendo: $nintendo, pc: $pc, mobile: $mobile, xbox: $xbox, playstation: $playstation, isMultiplayer: $isMultiplayer, ESRBRating: $ESRBRating})", parameters("nombre", nombreJuego, "descripcion", descripcion, "nintendo", nintendo, "pc", pc, "mobile", mobile, "xbox", xbox, "playstation", playstation, "isMultiplayer", isMultiplayer, "ESRBRating", ESRBRating));
                 return null;
             });
         }
@@ -82,7 +91,7 @@ public class DataBaseDriver implements AutoCloseable {
         try (Session session = driver.session()) {
             session.writeTransaction(tx -> {
                 tx.run("MATCH (p:Persona {nombre: $nombrePersona}), (j:Juego {nombre: $nombreJuego}) " +
-                        "CREATE (p)-[:JUGADO]->(j)", Values.parameters("nombrePersona", nombrePersona, "nombreJuego", nombreJuego));
+                        "CREATE (p)-[:JUGADO]->(j)", parameters("nombrePersona", nombrePersona, "nombreJuego", nombreJuego));
                 return null;
             });
         }
@@ -97,7 +106,7 @@ public class DataBaseDriver implements AutoCloseable {
     public void crearNodoDuracion(String duracion) {
         try (Session session = driver.session()) {
             String query = "CREATE (:Duration {duracion: $duracion})";
-            session.run(query, Values.parameters("duracion", duracion));
+            session.run(query, parameters("duracion", duracion));
         }
     }
 
@@ -127,7 +136,7 @@ public class DataBaseDriver implements AutoCloseable {
     public boolean existeNodoDuracion(String duracion) {
         try (Session session = driver.session()) {
             String query = "MATCH (d:Duration {duracion: $duracion}) RETURN d";
-            Result result = session.run(query, Values.parameters("duracion", duracion));
+            Result result = session.run(query, parameters("duracion", duracion));
 
             return result.hasNext();
         }
@@ -142,12 +151,12 @@ public class DataBaseDriver implements AutoCloseable {
         try (Session session = driver.session()) {
             // Eliminar relaciones existentes entre el juego y la duración
             String deleteQuery = "MATCH (j:Juego {nombre: $nombreJuego})-[r:TIENE_DURACION]->(d:Duration) DELETE r";
-            session.run(deleteQuery, Values.parameters("nombreJuego", nombreJuego));
+            session.run(deleteQuery, parameters("nombreJuego", nombreJuego));
 
             // Crear la nueva relación entre el juego y la duración
             String createQuery = "MATCH (j:Juego {nombre: $nombreJuego}), (d:Duration {duracion: $duracion}) " +
                     "CREATE (j)-[:TIENE_DURACION]->(d)";
-            session.run(createQuery, Values.parameters("nombreJuego", nombreJuego, "duracion", duracion));
+            session.run(createQuery, parameters("nombreJuego", nombreJuego, "duracion", duracion));
         }
     }
 
@@ -159,12 +168,12 @@ public class DataBaseDriver implements AutoCloseable {
         try (Session session = driver.session()) {
             // Verificar si el nodo de categoría ya existe
             String existeQuery = "MATCH (c:Categoria {nombre: $categoria}) RETURN count(c) AS count";
-            Result result = session.run(existeQuery, Values.parameters("categoria", categoria));
+            Result result = session.run(existeQuery, parameters("categoria", categoria));
 
             if (result.hasNext() && result.next().get("count").asInt() == 0) {
                 // Crear el nodo de categoría
                 String crearCategoriaQuery = "CREATE (:Categoria {nombre: $categoria})";
-                session.run(crearCategoriaQuery, Values.parameters("categoria", categoria));
+                session.run(crearCategoriaQuery, parameters("categoria", categoria));
             }
         }
     }
@@ -179,7 +188,7 @@ public class DataBaseDriver implements AutoCloseable {
             // Crear la relación entre el juego y la categoría
             String crearRelacionQuery = "MATCH (j:Juego {nombre: $nombreJuego}), (c:Categoria {nombre: $categoria}) " +
                     "CREATE (j)-[:CATEGORIA]->(c)";
-            session.run(crearRelacionQuery, Values.parameters("nombreJuego", nombreJuego, "categoria", categoria));
+            session.run(crearRelacionQuery, parameters("nombreJuego", nombreJuego, "categoria", categoria));
         }
     }
 
@@ -192,12 +201,12 @@ public class DataBaseDriver implements AutoCloseable {
         try (Session session = driver.session()) {
             // Verificar si el nodo personalizado ya existe
             String existeQuery = "MATCH (n:Plataforma {titulo: $titulo}) RETURN count(n) AS count";
-            Result result = session.run(existeQuery, Values.parameters("titulo", plataforma));
+            Result result = session.run(existeQuery, parameters("titulo", plataforma));
 
             if (result.hasNext() && result.next().get("count").asInt() == 0) {
                 // Crear el nodo personalizado
                 String crearNodoQuery = "CREATE (:Plataforma {titulo: $titulo, propiedad: $plataforma})";
-                session.run(crearNodoQuery, Values.parameters("titulo", plataforma, "plataforma", plataforma));
+                session.run(crearNodoQuery, parameters("titulo", plataforma, "plataforma", plataforma));
             }
         }
     }
@@ -216,7 +225,7 @@ public class DataBaseDriver implements AutoCloseable {
                 // Crear la relación entre el juego y el nodo personalizado
                 String crearRelacionQuery = "MATCH (j:Juego {nombre: $nombreJuego}), (n:Personalizado {titulo: $titulo}) " +
                         "CREATE (j)-[:DISPONIBLE]->(n)";
-                session.run(crearRelacionQuery, Values.parameters("nombreJuego", nombreJuego, "titulo", plataforma));
+                session.run(crearRelacionQuery, parameters("nombreJuego", nombreJuego, "titulo", plataforma));
             }
         }
     }
@@ -256,7 +265,7 @@ public class DataBaseDriver implements AutoCloseable {
                 session.writeTransaction(tx -> {
                     tx.run("MATCH (j:Juego {nombre: $nombreJuego}), (m:Multiplayer {titulo: 'multiplayer'}) " +
                                     "CREATE (j)-[:MULTIPLAYER]->(m)",
-                            Values.parameters("nombreJuego", nombreJuego));
+                            parameters("nombreJuego", nombreJuego));
                     return null;
                 });
             }
@@ -273,12 +282,12 @@ public class DataBaseDriver implements AutoCloseable {
             try (Session session = driver.session()) {
                 // Verificar si el nodo personalizado ya existe
                 String existeQuery = "MATCH (n:Rating {rating: $rating}) RETURN count(n) AS count";
-                Result result = session.run(existeQuery, Values.parameters("rating", rating));
+                Result result = session.run(existeQuery, parameters("rating", rating));
 
                 if (result.hasNext() && result.next().get("count").asInt() == 0) {
                     // Crear el nodo personalizado
                     String crearNodoQuery = "CREATE (:Rating {rating: $rating, rating: $rating})";
-                    session.run(crearNodoQuery, Values.parameters("rating", rating, "rating", rating));
+                    session.run(crearNodoQuery, parameters("rating", rating, "rating", rating));
                 }
             }
         }
@@ -293,7 +302,7 @@ public class DataBaseDriver implements AutoCloseable {
     public boolean existeNodoRating(String rating) {
         try (Session session = driver.session()) {
             String query = "MATCH (d:Rating {rating: $rating}) RETURN d";
-            Result result = session.run(query, Values.parameters("rating", rating));
+            Result result = session.run(query, parameters("rating", rating));
 
             return result.hasNext();
         }
@@ -308,13 +317,70 @@ public class DataBaseDriver implements AutoCloseable {
         try (Session session = driver.session()) {
             session.writeTransaction(tx -> {
                 tx.run("MATCH (j:Juego {nombre: $nombreJuego}), (r:Rating {rating: $rating}) " +
-                        "CREATE (j)-[:TIENE_RATING]->(r)", Values.parameters("nombreJuego", nombreJuego, "rating", rating));
+                        "CREATE (j)-[:TIENE_RATING]->(r)", parameters("nombreJuego", nombreJuego, "rating", rating));
                 return null;
             });
         }
     }
+    public Game mapGame(Node gameNode) {
+        String gameName = gameNode.get("nombre").asString();
+        String description = gameNode.get("description").asString();
+        boolean isOnNintendo = gameNode.get("nintendo").asBoolean();
+        boolean isOnPC = gameNode.get("pc").asBoolean();
+        boolean isOnMobile = gameNode.get("mobile").asBoolean();
+        boolean isOnXbox = gameNode.get("xbox").asBoolean();
+        boolean isOnPlayStation = gameNode.get("playstation").asBoolean();
+        boolean isMultiplayer = gameNode.get("isMultiplayer").asBoolean();
+        String esrbRating = gameNode.get("ESRBRating").asString();
+
+        // Retrieve categories using Cypher query
+        List<String> categories = new ArrayList<>();
+        try (Session session = driver.session()) {
+            Result result = session.run("MATCH (j:Juego)-[:CATEGORIA]->(c:Categoria) WHERE j.nombre = $gameName RETURN c.nombre",
+                    parameters("gameName", gameName));
+            while (result.hasNext()) {
+                Record record = result.next();
+                categories.add(record.get("c.nombre").asString());
+            }
+        } catch (Exception e) {
+            LOGGER.severe("Failed to retrieve categories for game: " + gameName);
+            e.printStackTrace();
+        }
+
+        // Retrieve duration using Cypher query
+        String duration = null;
+        try (Session session = driver.session()) {
+            Result result = session.run("MATCH (j:Juego)-[:TIENE_DURACION]->(d:Duration) WHERE j.nombre = $gameName RETURN d.duracion",
+                    parameters("gameName", gameName));
+            if (result.hasNext()) {
+                Record record = result.next();
+                duration = record.get("d.duracion").asString();
+            }
+        } catch (Exception e) {
+            LOGGER.severe("Failed to retrieve duration for game: " + gameName);
+            e.printStackTrace();
+        }
+
+        return new Game(gameName, description, duration, categories.get(0), categories.get(1), categories.get(2),
+                isOnNintendo, isOnPC, isOnMobile, isOnXbox, isOnPlayStation, isMultiplayer, esrbRating);
+    }
 
 
+    public Node getGameNodeByName(String gameName) {
+        try (Session session = driver.session()) {
+            Result result = session.run("MATCH (j:Juego) WHERE j.nombre = $gameName RETURN j", parameters("gameName", gameName));
+            if (result.hasNext()) {
+                Record record = result.next();
+                return record.get("j").asNode();
+            } else {
+                LOGGER.warning("Game node not found for name: " + gameName);
+            }
+        } catch (Exception e) {
+            LOGGER.severe("Failed to retrieve game node for name: " + gameName);
+            e.printStackTrace();
+        }
+        return null;
+    }
 
 
 }

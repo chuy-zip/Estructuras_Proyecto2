@@ -1,7 +1,6 @@
 import java.util.ArrayList;
 
 public class User {
-    private String userID;
     private String userName;
     private String userPassword;
     private int userAge;
@@ -14,10 +13,9 @@ public class User {
     private ArrayList<Game> playedGames;
     private ArrayList<Game> favoriteGames;
 
-    public User(String userID, String userName, String userPassword, int userAge,
+    public User(String userName, String userPassword, int userAge,
                 boolean prefersNintendo, boolean prefersPC, boolean prefersMobile,
                 boolean prefersXbox, boolean prefersPlaystation, boolean prefersMultiplayer) {
-        this.userID = userID;
         this.userName = userName;
         this.userPassword = userPassword;
         this.userAge = userAge;
@@ -32,15 +30,6 @@ public class User {
     }
 
     // Getters and Setters
-
-    public String getUserID() {
-        return userID;
-    }
-
-    public void setUserID(String userID) {
-        this.userID = userID;
-    }
-
     public String getUserName() {
         return userName;
     }
