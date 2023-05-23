@@ -9,11 +9,17 @@ public class DataBaseController {
     private String URI= System.getenv("NEO4J_URI");
     private String USER = System.getenv("NEO4J_USERNAME");
     private String PASSWORD = System.getenv("NEO4J_PASSWORD");
-
-    private User currentUser ;
+    private User currentUser;
     private ArrayList<Game> filteredGames = new ArrayList<>();
     private ArrayList<Game> recommendedgames = new ArrayList<>();
 
+    public ArrayList<Game> getUserPlayedGames(){
+        return currentUser.getPlayedGames();
+    }
+
+    public ArrayList<Game> getUserFavoriteGames(){
+        return currentUser.getFavoriteGames();
+    }
     public boolean accountExists(String name, String password){
         try (var app = new DataBaseDriver(URI, USER, PASSWORD, Config.defaultConfig())) {
             if(!app.userExists(name, password)){
@@ -22,7 +28,6 @@ public class DataBaseController {
         }
         return false;
     }
-
     public void validLogin(String name, String password){
         try (var app = new DataBaseDriver(URI, USER, PASSWORD, Config.defaultConfig())) {
             if(accountExists(name, password)){
@@ -32,7 +37,6 @@ public class DataBaseController {
             }
         }
     }
-
     public void setCurrentUserFromDataBase(String name, String password){
         try (var app = new DataBaseDriver(URI, USER, PASSWORD, Config.defaultConfig())) {
             if(app.userExists(name, password)){
@@ -40,7 +44,6 @@ public class DataBaseController {
             }
         }
     }
-
     public void setFilteredGamesFromDataBase(){
         try (var app = new DataBaseDriver(URI, USER, PASSWORD, Config.defaultConfig())) {
             if(currentUser != null){
@@ -48,7 +51,6 @@ public class DataBaseController {
             }
         }
     }
-
     public void validSignIn(String name, String password, int age, boolean preferNintendo, boolean preferPC,
                            boolean preferMobile, boolean preferXbox, boolean preferPlayStation, boolean preferMulti){
         try (var app = new DataBaseDriver(URI, USER, PASSWORD, Config.defaultConfig())) {
@@ -58,7 +60,6 @@ public class DataBaseController {
             }
         }
     }
-
     public ArrayList<Game> getFilteredGamesByESRB(ArrayList<Game> games, User user) {
         int userAge = user.getUserAge();
         ArrayList<Game> permittedGames = new ArrayList<>();
@@ -83,13 +84,19 @@ public class DataBaseController {
                 permittedGames.add(currentGame);
             }
         }
-
         return permittedGames;
     }
+    public ArrayList<Game> getGamesFilteredByCategory(ArrayList<String> Categories){
+        ArrayList<Game> newFilteredGames = new ArrayList<>();
 
+        for (Game game: filteredGames){
+            if(Categories.contains(game.getCategory1()) || Categories.contains(game.getCategory2()) || Categories.contains(game.getCategory3())){
+                filteredGames.add(game);
+            }
 
-
-
+        }
+        return newFilteredGames;
+    }
     public static void main(String[] args) {
         String URI= System.getenv("NEO4J_URI");
         String USER = System.getenv("NEO4J_USERNAME");
