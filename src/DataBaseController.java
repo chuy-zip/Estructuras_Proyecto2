@@ -2,6 +2,7 @@ import org.neo4j.driver.Config;
 import org.neo4j.driver.types.Node;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 
 public class DataBaseController {
@@ -97,6 +98,89 @@ public class DataBaseController {
         }
         return newFilteredGames;
     }
+
+    public ArrayList<Game> recommendGames() {
+        ArrayList<Game> playedGames = currentUser.getPlayedGames();
+        ArrayList<Game> favoriteGames = currentUser.getFavoriteGames();
+        ArrayList<Game> allGames = filteredGames;
+
+        // Add favorite games to the played games list
+        for (Game game : favoriteGames) {
+            if (!playedGames.contains(game)) {
+                playedGames.add(game);
+            }
+        }
+
+        int[][] similarityMatrix = new int[playedGames.size()][favoriteGames.size()];
+
+        // Calculate similarity scores and populate the similarity matrix
+        for (int i = 0; i < playedGames.size(); i++) {
+            Game playedGame = playedGames.get(i);
+
+            for (int j = 0; j < favoriteGames.size(); j++) {
+                Game favoriteGame = favoriteGames.get(j);
+
+                // Calculate similarity score for each game pair
+                int similarityScore = calculateSimilarity(playedGame, favoriteGame);
+
+                // Assign similarity score to the matrix
+                similarityMatrix[i][j] = similarityScore;
+            }
+        }
+
+        ArrayList<Game> recommendedGames = new ArrayList<>();
+        int numRecommendations = Math.min(5, allGames.size()); // Get up to 5 recommendations
+
+        // Generate recommendations based on the similarity matrix
+        for (int k = 0; k < numRecommendations; k++) {
+            int maxSimilarity = Integer.MIN_VALUE;
+            int maxSimilarityIndex = -1;
+
+            for (int i = 0; i < playedGames.size(); i++) {
+                for (int j = 0; j < favoriteGames.size(); j++) {
+                    int similarity = similarityMatrix[i][j];
+                    if (similarity > maxSimilarity) {
+                        maxSimilarity = similarity;
+                        maxSimilarityIndex = j;
+                    }
+                }
+            }
+
+            if (maxSimilarityIndex != -1) {
+                Game recommendedGame = allGames.get(maxSimilarityIndex);
+                recommendedGames.add(recommendedGame);
+                // Set the similarity score to -1 to avoid selecting it again
+                Arrays.fill(similarityMatrix[maxSimilarityIndex], -1);
+            }
+        }
+
+        return recommendedGames;
+    }
+    private int calculateSimilarity(Game playedGame, Game game) {
+        int similarity = 0;
+
+        if (playedGame.getDuration().equals(game.getDuration())) {
+            similarity += 5;
+        }
+        if (playedGame.getCategory1().equals(game.getCategory1())
+                || playedGame.getCategory1().equals(game.getCategory2())
+                || playedGame.getCategory1().equals(game.getCategory3())) {
+            similarity += 10;
+        }
+        if (playedGame.getCategory2().equals(game.getCategory1())
+                || playedGame.getCategory2().equals(game.getCategory2())
+                || playedGame.getCategory2().equals(game.getCategory3())) {
+            similarity += 10;
+        }
+        if (playedGame.getCategory3().equals(game.getCategory1())
+                || playedGame.getCategory3().equals(game.getCategory2())
+                || playedGame.getCategory3().equals(game.getCategory3())) {
+            similarity += 10;
+        }
+
+        return similarity;
+    }
+
     public static void main(String[] args) {
         String URI= System.getenv("NEO4J_URI");
         String USER = System.getenv("NEO4J_USERNAME");
@@ -108,12 +192,14 @@ public class DataBaseController {
 
             User nUser = app.mapUser(app.findUserNode("Chuy","Chuy123"));
 
+            System.out.println("Found user: " + nUser.getUserName());
+            System.out.println("Age: " + nUser.getUserAge());
             ArrayList<Game> filteredGames = app.getCompatibleGames(nUser);
 
             for (Game game: filteredGames) {
-                System.out.println("The name of the game: " + game.getGameName());
+                System.out.println("The name of the played game: " + game.getGameName());
             }
-            System.out.println("This game: " + nGame.getGameName() + " This var: " + nGame.getCategory2());
+            System.out.println("\nGetting game of name: " + nGame.getGameName() + " |The second category of the game is: " + nGame.getCategory2());
             System.out.println("Primer jugado persona: " + nUser.getPlayedGames().get(2).getGameName());
             System.out.println("Fav:" + nUser.getFavoriteGames().get(0).getGameName());
         }

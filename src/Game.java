@@ -1,3 +1,5 @@
+import java.util.Objects;
+
 public class Game {
     private String gameName;
     private String description;
@@ -136,4 +138,17 @@ public class Game {
     public void setEsrbRating(String esrbRating) {
         this.esrbRating = esrbRating;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        Game otherGame = (Game) obj;
+        return Objects.equals(gameName, otherGame.gameName);
+    }
+
 }
