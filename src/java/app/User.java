@@ -1,3 +1,5 @@
+package java.app;
+
 import java.util.ArrayList;
 
 public class User {

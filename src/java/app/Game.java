@@ -1,3 +1,5 @@
+package java.app;
+
 public class Game {
     private String gameName;
     private String description;

@@ -1,7 +1,8 @@
+package java.app;
+
 import org.neo4j.driver.*;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Session;
-import org.neo4j.driver.types.Node;
 import org.neo4j.driver.types.Relationship;
 
 import java.util.ArrayList;
@@ -10,7 +11,6 @@ import java.util.logging.Logger;
 
 import static org.neo4j.driver.Values.parameters;
 import org.neo4j.driver.types.Node;
-import org.neo4j.driver.types.Relationship;
 
 public class DataBaseDriver implements AutoCloseable {
     private static final Logger LOGGER = Logger.getLogger(DataBaseDriver.class.getName());

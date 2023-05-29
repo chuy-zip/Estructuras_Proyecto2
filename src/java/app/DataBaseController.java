@@ -1,8 +1,9 @@
+package java.app;
+
 import org.neo4j.driver.Config;
 import org.neo4j.driver.types.Node;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 public class DataBaseController {
 

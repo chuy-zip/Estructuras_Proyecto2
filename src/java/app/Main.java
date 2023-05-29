@@ -1,3 +1,5 @@
+package java.app;
+
 import org.neo4j.driver.Config;
 
 public class Main {
