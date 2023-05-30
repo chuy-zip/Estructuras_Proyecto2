@@ -14,6 +14,9 @@ public class DataBaseController {
     private ArrayList<Game> filteredGames = new ArrayList<>();
     private ArrayList<Game> recommendedgames = new ArrayList<>();
 
+    // Getters for user-related data
+    // This will only have data after the user has logged in or has previously selected an action
+    // Such as get recommendations for example
     public ArrayList<Game> getUserPlayedGames(){
         return currentUser.getPlayedGames();
     }
@@ -21,6 +24,16 @@ public class DataBaseController {
     public ArrayList<Game> getUserFavoriteGames(){
         return currentUser.getFavoriteGames();
     }
+
+    public ArrayList<Game> getFilteredGames() {
+        return filteredGames;
+    }
+
+    public ArrayList<Game> getRecommendedgames() {
+        return recommendedgames;
+    }
+
+    // Check if an account exists in the database
     public boolean accountExists(String name, String password){
         try (var app = new DataBaseDriver(URI, USER, PASSWORD, Config.defaultConfig())) {
             if(!app.userExists(name, password)){
@@ -29,6 +42,10 @@ public class DataBaseController {
         }
         return false;
     }
+
+    // Validate login credentials and set the current user and filtered games
+    // Once the user has logged in, the program automatically gets the user from the database and filters
+    // The games according to the user preferences and age
     public void validLogin(String name, String password){
         try (var app = new DataBaseDriver(URI, USER, PASSWORD, Config.defaultConfig())) {
             if(accountExists(name, password)){
@@ -38,6 +55,8 @@ public class DataBaseController {
             }
         }
     }
+
+    // Set the current user based on the provided name and password
     public void setCurrentUserFromDataBase(String name, String password){
         try (var app = new DataBaseDriver(URI, USER, PASSWORD, Config.defaultConfig())) {
             if(app.userExists(name, password)){
@@ -45,6 +64,8 @@ public class DataBaseController {
             }
         }
     }
+
+    // Set the filtered games based on the current user
     public void setFilteredGamesFromDataBase(){
         try (var app = new DataBaseDriver(URI, USER, PASSWORD, Config.defaultConfig())) {
             if(currentUser != null){
@@ -52,15 +73,23 @@ public class DataBaseController {
             }
         }
     }
+
+    // Validate sign-in credentials, create a new account, and set the current user and filtered games
+    // If the user does not exist a new user is created and its favorite games are saved
     public void validSignIn(String name, String password, int age, boolean preferNintendo, boolean preferPC,
-                           boolean preferMobile, boolean preferXbox, boolean preferPlayStation, boolean preferMulti){
+                            boolean preferMobile, boolean preferXbox, boolean preferPlayStation, boolean preferMulti, ArrayList<String> playedGamesNames){
         try (var app = new DataBaseDriver(URI, USER, PASSWORD, Config.defaultConfig())) {
             if(!accountExists(name, password)){
                 app.crearNodoPersona(name, age, password, preferNintendo, preferPC, preferMobile, preferXbox, preferPlayStation, preferMulti);
+                for (String gameName: playedGamesNames){
+                    app.crearRelacionPersonaJuego(name,gameName);
+                }
                 validLogin(name, password);
             }
         }
     }
+
+    // Filter games based on ESRB rating and user's age
     public ArrayList<Game> getFilteredGamesByESRB(ArrayList<Game> games, User user) {
         int userAge = user.getUserAge();
         ArrayList<Game> permittedGames = new ArrayList<>();
@@ -87,6 +116,9 @@ public class DataBaseController {
         }
         return permittedGames;
     }
+
+    // Filter games based on categories
+    //When a user tries to do a filtered search by selecting categories
     public ArrayList<Game> getGamesFilteredByCategory(ArrayList<String> Categories){
         ArrayList<Game> newFilteredGames = new ArrayList<>();
 
@@ -94,11 +126,12 @@ public class DataBaseController {
             if(Categories.contains(game.getCategory1()) || Categories.contains(game.getCategory2()) || Categories.contains(game.getCategory3())){
                 filteredGames.add(game);
             }
-
         }
         return newFilteredGames;
     }
 
+    // Recommend games based on user's played and favorite games
+    // The games are stored in the variable of the class recommendedgames
     public ArrayList<Game> recommendGames() {
         ArrayList<Game> playedGames = currentUser.getPlayedGames();
         ArrayList<Game> favoriteGames = currentUser.getFavoriteGames();
@@ -128,7 +161,6 @@ public class DataBaseController {
             }
         }
 
-        ArrayList<Game> recommendedGames = new ArrayList<>();
         int numRecommendations = Math.min(5, allGames.size()); // Get up to 5 recommendations
 
         // Generate recommendations based on the similarity matrix
@@ -148,14 +180,16 @@ public class DataBaseController {
 
             if (maxSimilarityIndex != -1) {
                 Game recommendedGame = allGames.get(maxSimilarityIndex);
-                recommendedGames.add(recommendedGame);
+                recommendedgames.add(recommendedGame);
                 // Set the similarity score to -1 to avoid selecting it again
                 Arrays.fill(similarityMatrix[maxSimilarityIndex], -1);
             }
         }
 
-        return recommendedGames;
+        return recommendedgames;
     }
+
+    // Calculate similarity between two games based on certain criteria
     private int calculateSimilarity(Game playedGame, Game game) {
         int similarity = 0;
 
@@ -179,29 +213,5 @@ public class DataBaseController {
         }
 
         return similarity;
-    }
-
-    public static void main(String[] args) {
-        String URI= System.getenv("NEO4J_URI");
-        String USER = System.getenv("NEO4J_USERNAME");
-        String PASSWORD = System.getenv("NEO4J_PASSWORD");
-
-        try (var app = new DataBaseDriver(URI, USER, PASSWORD, Config.defaultConfig())) {
-            System.out.println("Connected");
-            Game nGame = app.mapGame(app.getGameNodeByName("Mario"));
-
-            User nUser = app.mapUser(app.findUserNode("Chuy","Chuy123"));
-
-            System.out.println("Found user: " + nUser.getUserName());
-            System.out.println("Age: " + nUser.getUserAge());
-            ArrayList<Game> filteredGames = app.getCompatibleGames(nUser);
-
-            for (Game game: filteredGames) {
-                System.out.println("The name of the played game: " + game.getGameName());
-            }
-            System.out.println("\nGetting game of name: " + nGame.getGameName() + " |The second category of the game is: " + nGame.getCategory2());
-            System.out.println("Primer jugado persona: " + nUser.getPlayedGames().get(2).getGameName());
-            System.out.println("Fav:" + nUser.getFavoriteGames().get(0).getGameName());
-        }
     }
 }
