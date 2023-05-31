@@ -32,7 +32,7 @@ def init_var_session(usuario):
 def home():
     return render_template('index.html')
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
         return render_template('login.html')
@@ -56,6 +56,8 @@ def login():
                 return redirect(url_for('home'))
             else:
                 return "Incorrect login credentials"
+            
+    
 # Connect to the database
 with driver.session() as session:
     # Perform database operations

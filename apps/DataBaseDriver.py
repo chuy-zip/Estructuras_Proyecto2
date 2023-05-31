@@ -274,7 +274,7 @@ class DataBaseDriver:
     #method get Compatible games
     def get_compatible_games(user):
         compatible_games = []
-
+        
         try:
             with self.driver.session() as session:
                 result = session.run(
@@ -284,7 +284,7 @@ class DataBaseDriver:
                     "AND (u.nintendo OR u.pc OR u.mobile OR u.xbox OR u.playstation)\n"
                     "AND g.isMultiplayer = u.preferMulti\n"
                     "RETURN g",
-                    user_name=user.get_user_name()
+                    user_name=user.user_name
                 )
 
                 for record in result:
@@ -292,7 +292,7 @@ class DataBaseDriver:
                     game = map_game(game_node)
                     compatible_games.append(game)
         except Exception as e:
-            print("Failed to retrieve compatible games for user: {}".format(user.get_user_name()))
+            print("Failed to retrieve compatible games for user: {}".format(user.user_name))
             print(e)
 
         return compatible_games
