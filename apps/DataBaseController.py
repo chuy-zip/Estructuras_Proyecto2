@@ -93,3 +93,26 @@ class DataBaseController:
                 new_filtered_games.append(game)
 
         return new_filtered_games
+    
+    def get_all_existing_categories():
+        all_categories = []
+
+        with DataBaseDriver(self.URI, self.USER, self.PASSWORD, Config.default_config()) as app:
+            result = session.run(
+                "MATCH (g:Game) "
+                "RETURN DISTINCT g.category1 AS category1, g.category2 AS category2, g.category3 AS category3"
+            )
+
+            for record in result:
+                category1 = record["category1"]
+                category2 = record["category2"]
+                category3 = record["category3"]
+
+                if category1 and category1 not in all_categories:
+                    all_categories.append(category1)
+                if category2 and category2 not in all_categories:
+                    all_categories.append(category2)
+                if category3 and category3 not in all_categories:
+                    all_categories.append(category3)
+
+        return all_categories

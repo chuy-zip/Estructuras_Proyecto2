@@ -274,7 +274,7 @@ class DataBaseDriver:
     #method get Compatible games
     def get_compatible_games(user):
         compatible_games = []
-        
+
         try:
             with self.driver.session() as session:
                 result = session.run(
@@ -318,3 +318,15 @@ class DataBaseDriver:
 
         return False
     
+def get_all_games():
+    games = []
+
+    with driver.session() as session:
+        result = session.run("MATCH (g:Juego) RETURN g")
+
+        for record in result:
+            game_node = record['g']
+            game = map_game(game_node)
+            games.append(game)
+
+    return games
