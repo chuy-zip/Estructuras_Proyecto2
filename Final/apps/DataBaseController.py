@@ -22,7 +22,7 @@ class DataBaseController:
 
     def account_exists(self, name, password):
         with DataBaseDriver(self.URI, self.USER, self.PASSWORD) as app:
-            if not app.user_exists(name, password):
+            if app.user_exists(name, password):
                 return True
         return False
 
