@@ -25,6 +25,14 @@ class DataBaseController:
                 return True
         return False
 
+    def verify_session_iniciated():
+        if self.currentUser == None:
+            return True
+        return False
+
+    def sign_out():
+        self.currentUser = None
+
     def valid_login(self, name, password):
         with DataBaseDriver(self.URI, self.USER, self.PASSWORD, Config.default_config()) as app:
             if self.account_exists(name, password):

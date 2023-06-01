@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Usuario{% endblock %}
+{% block content %}
+
+<div class="pagetitle">
+  <h1>Game Name</h1>
+  <nav>
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+      <li class="breadcrumb-item">Pages</li>
+      <li class="breadcrumb-item active">Blank</li>
+    </ol>
+  </nav>
+</div><!-- End Page Title -->
+
+<section class="section">
+  <div class="row">
+    <div class="col-lg-12">
+
+      <div class="card mb-3">
+        <div class="row g-0">
+          <div class="col-md-4">
+            <img src="assets/img/card.jpg" class="img-fluid rounded-start" alt="...">
+          </div>
+          <div class="col-md-8">
+            <div class="card-body">
+              <h4 class="card-title">
+                <button type="button" class="btn btn-warning"><i class="bi bi-star"></i></button>
+                <button type="button" class="btn btn-success"><i class="bi bi-check2-circle"></i></button>
+              </h4>
+              <span class="badge rounded-pill bg-light text-dark">Genero 1</span>
+              <span class="badge rounded-pill bg-light text-dark">Genero 2</span>
+              <span class="badge rounded-pill bg-light text-dark">Genero 3</span>
+              <span class="badge rounded-pill bg-light text-dark">Genero 4</span>
+              <span class="badge rounded-pill bg-light text-dark">Genero 5</span>
+              <br><br><br>
+              <h5>Description</h5>
+              <p>Descripcion...</p>
+            </div>
+          </div>
+        </div>
+      </div><!-- End Card with an image on left -->
+
+    </div>
+    <div class="col-lg-12">
+      <!-- Default Card -->
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Gallery</h5>
+          <div class="row">
+            <div class="col-lg-4">
+              <img src="assets/img/slides-1.jpg" class="d-block w-100" alt="...">
+            </div>
+            
+            <div class="col-lg-4">
+              <img src="assets/img/slides-1.jpg" class="d-block w-100" alt="...">
+            </div>
+            
+            <div class="col-lg-4">
+              <img src="assets/img/slides-1.jpg" class="d-block w-100" alt="...">
+            </div>
+          </div>
+        </div>
+      </div><!-- End Default Card -->
+    </div>
+  </div>
+</section>
+{% endblock %}
