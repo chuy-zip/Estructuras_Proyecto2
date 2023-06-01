@@ -1,0 +1,40 @@
+.select {
+    display: grid;
+    grid-template-columns: repeat(8, auto);
+    max-width: 1000px;
+    gap: 1px;
+  }
+  
+  .select__item {
+    padding: 10px;
+    cursor: pointer;
+    font-family: "Heebo", sans-serif;
+    text-align: center;
+    border-radius: 100px;
+    background: #F8F7FF;
+    border-color: #B8B8FF;
+    transition: background 0.5s;
+  }
+  
+  .select__item--selected {
+    background: #B8B8FF;
+    color: #ffffff;
+  }
+
+  #enviarBtn {
+      background-color: #F8F7FF;
+      color: #9381FF;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    #enviarBtn:hover {
+      background-color: #B8B8FF;
+      color: #F8F7FF;
+    }
+
+
+

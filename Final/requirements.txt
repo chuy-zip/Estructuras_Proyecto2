@@ -1,0 +1,5 @@
+flask
+flask_restful
+py2neo
+neo4j
+python-dotenv
