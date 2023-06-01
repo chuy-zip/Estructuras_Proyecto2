@@ -487,4 +487,24 @@ public class DataBaseDriver implements AutoCloseable {
         return false;
     }
 
+    public ArrayList<Game> getAllGames() {
+        ArrayList<Game> games = new ArrayList<>();
+
+        try (Session session = driver.session()) {
+            Result result = session.run("MATCH (g:Juego) RETURN g");
+
+            while (result.hasNext()) {
+                Record record = result.next();
+                Node gameNode = record.get("g").asNode();
+                Game game = mapGame(gameNode);
+                games.add(game);
+            }
+        } catch (Exception e) {
+            LOGGER.severe("Failed to retrieve all games from the database.");
+            e.printStackTrace();
+        }
+
+        return games;
+    }
+
 }

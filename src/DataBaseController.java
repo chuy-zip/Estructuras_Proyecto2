@@ -1,6 +1,7 @@
 import org.neo4j.driver.Config;
 import org.neo4j.driver.types.Node;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -213,5 +214,26 @@ public class DataBaseController {
         }
 
         return similarity;
+    }
+
+    public ArrayList<String> getAllExistingCategories(){
+        ArrayList<String> allCategories = new ArrayList<>();
+
+        try (var app = new DataBaseDriver(URI, USER, PASSWORD, Config.defaultConfig())) {
+            ArrayList<Game> allGames = app.getAllGames();
+
+            for ( Game game : allGames){
+                if (!allCategories.contains(game.getCategory1())){
+                    allCategories.add(game.getCategory1());
+                }
+                if (!allCategories.contains(game.getCategory2())){
+                    allCategories.add(game.getCategory2());
+                }
+                if (!allCategories.contains(game.getCategory3())){
+                    allCategories.add(game.getCategory3());
+                }
+            }
+        }
+        return allCategories;
     }
 }
